@@ -33,8 +33,7 @@ def main():
     us_data_str = ",".join(str(item) for item in d_dict['US'])
     canada_data_str = ",".join(str(item) for item in d_dict['Canada'])
 
-    file_path = "/home/gli/CS/CS540/HW4/raw_output/US_CAN_data.txt"
-    with open(file_path, "w") as out_file:
+    with open('File Path for US_CAN_data.txt', 'w') as out_file:
         out_file.write(us_data_str + '\n')
         out_file.write(canada_data_str)
 
@@ -47,8 +46,7 @@ def main():
     canada_diff = [x - y for x, y in zip(d_dict['Canada'][1:], d_dict['Canada'])]
     canada_diff_str = ",".join(str(item) for item in canada_diff)
 
-    file_path = "/home/gli/CS/CS540/HW4/raw_output/US_CAN_diff.txt"
-    with open(file_path, "w") as out_file:
+    with open('File Path for US_CAN_diff.txt', 'w') as out_file:
         out_file.write(us_diff_str + '\n')
         out_file.write(canada_diff_str)
 
@@ -59,7 +57,7 @@ def main():
 
     f_dict = {}
 
-    out_file = open('/home/gli/CS/CS540/HW4/raw_output/2_4_8_features.txt', 'w')
+    out_file = open('File Path for 2_4_8_features.txt', 'w')
 
     for c in d_dict:
         # print(c)
@@ -81,7 +79,7 @@ def main():
         for country in clusters[i]:
             f_dict[country]['sld_cluster'] = i
     
-    out_file = open('/home/gli/CS/CS540/HW4/raw_output/single_linkage.txt', 'w')
+    out_file = open('File Path for single_linkage.txt', 'w')
 
     sld_clusters = []
 
@@ -101,7 +99,7 @@ def main():
         for country in clusters[i]:
             f_dict[country]['cld_cluster'] = i
     
-    out_file = open('/home/gli/CS/CS540/HW4/raw_output/complete_linkage.txt', 'w')
+    out_file = open('File Path for complete_linkage.txt', 'w')
 
     cld_clusters = []
 
@@ -121,7 +119,7 @@ def main():
         for country in clusters[i]:
             f_dict[country]['kmeans'] = i
 
-    out_file = open('/home/gli/CS/CS540/HW4/raw_output/kmeans_clusters.txt', 'w')
+    out_file = open('File Path for kmeans_clusters.txt', 'w')
 
     kmeans_clusters = []
 
@@ -132,7 +130,7 @@ def main():
 
     out_file.close()
 
-    out_file = open('/home/gli/CS/CS540/HW4/raw_output/kmeans_centers.txt', 'w')
+    out_file = open('File Path for kmeans_centers.txt', 'w')
 
     for center in centers:
         out_file.write(",".join([str(item) for item in center]) + '\n')
@@ -164,7 +162,7 @@ def main():
     # print(clusters)
     # print(centers)
 
-    out_file = open('/home/gli/CS/CS540/HW4/raw_output/distortion.txt', 'w')
+    out_file = open('File Path for distortion.txt', 'w')
 
     out_file.write(str(round(distortion, 4)))
 
