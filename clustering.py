@@ -2,7 +2,6 @@ from math import sqrt
 import numpy as np
 import copy
 
-
 def main():
     print("Program Start")
     d_dict = {}
@@ -60,7 +59,6 @@ def main():
     out_file = open('File Path for 2_4_8_features.txt', 'w')
 
     for c in d_dict:
-        # print(c)
         country_data = d_dict[c]
         f_dict[c] = {} 
         f_dict[c]['days'] = [-1, -1, -1]
@@ -115,7 +113,6 @@ def main():
     clusters, centers = kmeans(f_dict, k)
 
     for i in range(len(clusters)):
-        # print(clusters[i])
         for country in clusters[i]:
             f_dict[country]['kmeans'] = i
 
@@ -149,30 +146,11 @@ def main():
             distance = euclidean(c_days, center, True)
             distortion += distance
 
-    # for c in f_dict:
-    #     c_days = f_dict[c]['days']
-    #     c_cluster = f_dict[c]['kmeans']
-    #     # print(c + ' ' + str(c_cluster))
-    #     center = centers[c_cluster]
-
-    #     distance = euclidean(c_days, center)
-    #     print(distance)
-    #     distortion += distance
-
-    # print(clusters)
-    # print(centers)
-
     out_file = open('File Path for distortion.txt', 'w')
 
     out_file.write(str(round(distortion, 4)))
 
     out_file.close()
-    # print(centers)
-    # print(distortion)
-
-    # for cluster in clusters:
-    #     print(center(cluster, f_dict))
-
 
     print("Program Finish")
 
@@ -186,7 +164,10 @@ def add_row(c, d_dict, row, data_start_idx):
         d_dict[c] = [float(x) for x in row[data_start_idx:]]
     
 def days_to(country_data, divisor1, divisor2, divisor3):
-    """Returns index where value was less than or equal to specified amounts"""
+    """
+    Returns index where value was less than or equal to the most recent value divided by the specified divisors
+    Assumes divisors are in ascending order
+    """
     country_data_reversed = country_data[::-1]
     most_recent = country_data_reversed[0]
 
@@ -207,15 +188,15 @@ def days_to(country_data, divisor1, divisor2, divisor3):
             found1 = True
 
             if value1 == 0:
-                remaining_values = (len(country_data) - (days1 + 1)) // 2
-                return days1, remaining_values, remaining_values
+                # remaining_values = (len(country_data) - (days1 + 1)) // 2
+                return days1, 0, 0
 
         if not found2 and (country_data_reversed[idx] <= value2):
             days2 = idx - days1
             found2 = True
 
             if value2 == 0:
-                return days1, days2, len(country_data) - (days1 + days2 + 1)
+                return days1, days2, 0
 
         if not found3 and (country_data_reversed[idx] <= value3):
             days3 = idx - (days2 + days1)
@@ -225,6 +206,7 @@ def days_to(country_data, divisor1, divisor2, divisor3):
 
 def euclidean(a, b, use_sum_of_squares=False):
     """Find the Euclidean distance between two points"""
+
     sum_of_squares = sum((a[i]-b[i])**2 for i in range(len(a)))
     
     if use_sum_of_squares:
@@ -234,7 +216,19 @@ def euclidean(a, b, use_sum_of_squares=False):
 
 # linkage distance
 def clustering_distance(cluster1, cluster2, f_dict, clustering_type): 
-    """Find linkage distance for hierarchical clustering"""
+    """
+    Find linkage distance for clustering
+    
+    Parameters:
+    cluster1: first cluster for distance measurement
+    cluster2: second cluster for distance measurement
+    f_dict: data dictionary
+    clustering_type: 'SLD' for shortest linkage distance
+                     'CLD' for complete linkage distance
+                     
+    Returns:
+    res: linkage distance
+    """
     res = float('inf')
 
     if clustering_type == 'CLD':
@@ -251,11 +245,14 @@ def clustering_distance(cluster1, cluster2, f_dict, clustering_type):
                 res = dist
     return res
 
-# hierarchical clustering (sld, 'euclidean')
 def hierarchical_clustering(f_dict, k, clustering_type):
     """Method for creating hierarchical clusters"""
+
+    # Initialize each country as its own cluster 
     n = len(f_dict)
     clusters = [{d} for d in f_dict.keys()]
+
+    # For hierarchical clustering, merge clusters n-k times
     for _ in range(n-k):
         dist = float('inf')
         best_pair = (None, None)
@@ -266,8 +263,6 @@ def hierarchical_clustering(f_dict, k, clustering_type):
                     dist = test_dist
                     best_pair = (i,j)
         new_clu = clusters[best_pair[0]] | clusters[best_pair[1]]
-        # del clusters[best_pair[0]]
-        # del clusters[best_pair[1] - 1]
         clusters = [clusters[i] for i in range(len(clusters)) if i not in best_pair]
         clusters.append(new_clu)
 
@@ -279,19 +274,17 @@ def find_center(cluster, f_dict):
 
 def kmeans(f_dict, k):
     """Method for k-means clustering"""
+    # Start by randomly assigning a country to a cluster
     countries = sorted([c for c in f_dict.keys()])
     init_num = np.random.choice(len(countries) - 1, k)
     clusters = [{countries[i]} for i in init_num]
     country_c = [countries[i] for i in init_num]
 
     print(init_num)
-    # for c in country_c:
-    #     print(f_dict[c]['days'])
 
     while True:
         new_clusters = [set() for _ in range(k)]
         centers = [find_center(cluster, f_dict) for cluster in clusters]
-        # print(centers)
         for c in countries:
             clu_ind = np.argmin([euclidean(f_dict[c]['days'], centers[i]) for i in range(k)])
             new_clusters[clu_ind].add(c)
