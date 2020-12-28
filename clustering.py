@@ -280,7 +280,7 @@ def kmeans(f_dict, k):
     clusters = [{countries[i]} for i in init_num]
     country_c = [countries[i] for i in init_num]
 
-    print(init_num)
+    # print(init_num)
 
     while True:
         new_clusters = [set() for _ in range(k)]
